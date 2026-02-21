@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>S.A.S.S. - Terminal d'État</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --sass-blue: #0d1b2a;
+            --sass-gold: #c5a059;
+        }
+        body { 
+            background: #f0f2f5; 
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; justify-content: center; align-items: center; 
+            min-height: 100vh; margin: 0;
+        }
+        .interface { 
+            background: white; 
+            width: 100%; max-width: 400px; 
+            padding: 40px; 
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-top: 8px solid var(--sass-blue);
+        }
+        .header { text-align: center; margin-bottom: 30px; }
+        h1 { color: var(--sass-blue); font-size: 1.8rem; margin: 0; letter-spacing: 4px; font-weight: 900; }
+        .tagline { color: var(--sass-gold); font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
+        
+        .field { margin-bottom: 20px; }
+        label { display: block; font-size: 0.8rem; color: #64748b; margin-bottom: 6px; font-weight: 700; text-transform: uppercase; }
+        input { 
+            width: 100%; border: 2px solid #e2e8f0; padding: 12px; 
+            font-size: 1rem; box-sizing: border-box; outline: none;
+        }
+        input:focus { border-color: var(--sass-gold); }
+
+        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; }
+        button { 
+            padding: 15px; border: none; cursor: pointer; font-weight: 900; 
+            text-transform: uppercase; transition: 0.2s;
+        }
+        .btn-approve { background: var(--sass-blue); color: #fff; }
+        .btn-deny { background: #fff; color: #850000; border: 2px solid #850000; }
+        button:hover { opacity: 0.9; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+<div class="interface">
+    <div class="header">
+        <h1>S.A.S.S.</h1>
+        <div class="tagline">State Security Terminal</div>
+    </div>
+
+    <div class="field">
+        <label>Prénom</label>
+        <input type="text" id="fn" placeholder="Ex: Nathan">
+    </div>
+    <div class="field">
+        <label>Nom</label>
+        <input type="text" id="ln" placeholder="Ex: Drake">
+    </div>
+    <div class="field">
+        <label>ID Badge</label>
+        <input type="text" id="id" placeholder="Ex: 8821">
+    </div>
+    <div class="field">
+        <label>Téléphone</label>
+        <input type="text" id="ph" placeholder="Ex: 555-0102">
+    </div>
+
+    <div class="actions">
+        <button class="btn-approve" onclick="generate(true)">APPROUVER</button>
+        <button class="btn-deny" onclick="generate(false)">REFUSER</button>
+    </div>
+</div>
+
+<script>
+    function generate(isAccepted) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        const f = document.getElementById('fn').value.toUpperCase();
+        const l = document.getElementById('ln').value.toUpperCase();
+        const id = document.getElementById('id').value.toUpperCase();
+        const p = document.getElementById('ph').value;
+
+        if(!f || !l) return alert("Données manquantes.");
+
+        // On définit le nom de l'image ici (doit être dans le même dossier ou lien GitHub)
+        const imgPath = "SASS.jpg"; 
+
+        const navy = [13, 27, 42];
+        const gold = [197, 160, 89];
+
+        // Background & Cadres
+        doc.setFillColor(250, 250, 250);
+        doc.rect(0, 0, 210, 297, 'F');
+        doc.setDrawColor(navy[0], navy[1], navy[2]);
+        doc.setLineWidth(5);
+        doc.rect(5, 5, 200, 287); 
+        doc.setDrawColor(gold[0], gold[1], gold[2]);
+        doc.setLineWidth(1);
+        doc.rect(8, 8, 194, 281);
+
+        // Header
+        doc.setFillColor(navy[0], navy[1], navy[2]);
+        doc.rect(5, 5, 200, 55, 'F');
+        doc.setFillColor(gold[0], gold[1], gold[2]);
+        doc.rect(5, 60, 200, 3, 'F');
+
+        // Ajout du Logo via le nom de fichier
+        try {
+            doc.addImage(imgPath, 'JPEG', 15, 12, 42, 42);
+        } catch (e) {
+            console.warn("Logo non trouvé, génération sans image.");
+        }
+
+        doc.setTextColor(255, 255, 255);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(24);
+        doc.text("SAN ANDREAS SECRET SERVICE", 125, 30, { align: "center" });
+        
+        doc.setTextColor(gold[0], gold[1], gold[2]);
+        doc.setFontSize(12);
+        doc.text("STATE SPECIAL AGENT PROGRAM", 125, 40, { align: "center", charSpace: 1.5 });
+
+        // Filigrane
+        doc.setTextColor(235, 235, 235);
+        doc.setFontSize(80);
+        doc.text("S.A.S.S.", 105, 160, { align: "center", angle: 45 });
+
+        // Corps
+        let y = 90;
+        doc.setTextColor(navy[0], navy[1], navy[2]);
+        doc.setFontSize(11);
+        doc.text(`DOC-ID: ${Math.floor(Math.random()*900000)}`, 15, y);
+        doc.text(`DATE: ${new Date().toLocaleDateString()}`, 165, y);
+
+        y += 25;
+        doc.setFontSize(20);
+        doc.text("RAPPORT D'INTÉGRATION", 105, y, { align: "center" });
+        doc.line(65, y + 3, 145, y + 3);
+
+        y += 25;
+        doc.setFontSize(13);
+        const items = [
+            ["IDENTITÉ DU SUJET", `${f} ${l}`],
+            ["MATRICULE D'ÉTAT", `#${id}`],
+            ["COMMUNICATIONS", p],
+            ["STRICTE ACCRÉDITATION", isAccepted ? "NIVEAU 3 - VALIDÉ" : "AUCUNE - REJETÉ"]
+        ];
+
+        items.forEach(([label, val]) => {
+            doc.setFont(undefined, "bold");
+            doc.text(label + " :", 30, y);
+            doc.setFont(undefined, "normal");
+            doc.text(val, 95, y);
+            doc.setDrawColor(220, 220, 220);
+            doc.line(30, y + 2, 180, y + 2);
+            y += 15;
+        });
+
+        // Verdict
+        y += 20;
+        const color = isAccepted ? [13, 27, 42] : [133, 0, 0];
+        doc.setFillColor(color[0], color[1], color[2]);
+        doc.rect(25, y, 160, 45, 'F');
+        doc.setDrawColor(gold[0], gold[1], gold[2]);
+        doc.rect(26, y+1, 158, 43);
+
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(22);
+        doc.text(isAccepted ? "CANDIDATURE APPROUVÉE" : "CANDIDATURE REJETÉE", 105, y + 18, { align: "center" });
+        
+        doc.setFontSize(10);
+        doc.setTextColor(isAccepted ? gold[0] : 255, isAccepted ? gold[1] : 255, isAccepted ? gold[2] : 255);
+        const msg = isAccepted 
+            ? "Accès autorisé aux infrastructures sécurisées de l'État." 
+            : "Sujet refusé de manière DEFINITIVE.";
+        doc.text(msg, 105, y + 32, { align: "center" });
+
+        doc.save(`SASS_${l}.pdf`);
+    }
+</script>
+
+</body>
+</html>
