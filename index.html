@@ -18,24 +18,26 @@
         .interface { 
             background: white; 
             width: 100%; max-width: 400px; 
-            padding: 40px; 
+            padding: 30px 40px; 
             border-radius: 4px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             border-top: 8px solid var(--sass-blue);
         }
-        .header { text-align: center; margin-bottom: 30px; }
+        .header { text-align: center; margin-bottom: 25px; }
         h1 { color: var(--sass-blue); font-size: 1.8rem; margin: 0; letter-spacing: 4px; font-weight: 900; }
         .tagline { color: var(--sass-gold); font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
         
-        .field { margin-bottom: 20px; }
-        label { display: block; font-size: 0.8rem; color: #64748b; margin-bottom: 6px; font-weight: 700; text-transform: uppercase; }
-        input { 
-            width: 100%; border: 2px solid #e2e8f0; padding: 12px; 
-            font-size: 1rem; box-sizing: border-box; outline: none;
+        .field { margin-bottom: 15px; }
+        label { display: block; font-size: 0.75rem; color: #64748b; margin-bottom: 4px; font-weight: 700; text-transform: uppercase; }
+        input, textarea { 
+            width: 100%; border: 2px solid #e2e8f0; padding: 10px; 
+            font-size: 0.95rem; box-sizing: border-box; outline: none;
+            font-family: inherit;
         }
-        input:focus { border-color: var(--sass-gold); }
+        textarea { resize: none; height: 80px; }
+        input:focus, textarea:focus { border-color: var(--sass-gold); }
 
-        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; }
+        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; }
         button { 
             padding: 15px; border: none; cursor: pointer; font-weight: 900; 
             text-transform: uppercase; transition: 0.2s;
@@ -59,15 +61,19 @@
     </div>
     <div class="field">
         <label>Nom</label>
-        <input type="text" id="ln" placeholder="Doe">
+        <input type="text" id="ln" placeholder="DOE">
     </div>
     <div class="field">
-        <label>ID </label>
+        <label>ID / Badge</label>
         <input type="text" id="id" placeholder="8821">
     </div>
     <div class="field">
         <label>Téléphone</label>
         <input type="text" id="ph" placeholder="00000-00000">
+    </div>
+    <div class="field">
+        <label>Observations de la direction</label>
+        <textarea id="obs" placeholder="Ex: Profil stable, apte au service..."></textarea>
     </div>
 
     <div class="actions">
@@ -85,12 +91,11 @@
         const l = document.getElementById('ln').value.toUpperCase();
         const id = document.getElementById('id').value.toUpperCase();
         const p = document.getElementById('ph').value;
+        const obs = document.getElementById('obs').value || "Aucune observation particulière.";
 
-        if(!f || !l) return alert("Données manquantes.");
+        if(!f || !l) return alert("Identité du sujet manquante.");
 
-        // On passe en .png ici
         const imgPath = "SASS.png"; 
-
         const navy = [13, 27, 42];
         const gold = [197, 160, 89];
 
@@ -107,94 +112,117 @@
         try {
             const logoImg = await loadImage(imgPath);
             
-            // Design PDF
-            doc.setFillColor(250, 250, 250);
+            // Background & Bordures
+            doc.setFillColor(248, 248, 248);
             doc.rect(0, 0, 210, 297, 'F');
             doc.setDrawColor(navy[0], navy[1], navy[2]);
             doc.setLineWidth(5);
             doc.rect(5, 5, 200, 287); 
             doc.setDrawColor(gold[0], gold[1], gold[2]);
-            doc.setLineWidth(1);
+            doc.setLineWidth(0.8);
             doc.rect(8, 8, 194, 281);
 
             // Header
             doc.setFillColor(navy[0], navy[1], navy[2]);
             doc.rect(5, 5, 200, 55, 'F');
             doc.setFillColor(gold[0], gold[1], gold[2]);
-            doc.rect(5, 60, 200, 3, 'F');
+            doc.rect(5, 60, 200, 2.5, 'F');
 
-            // Ajout du logo en format PNG
             doc.addImage(logoImg, 'PNG', 15, 12, 42, 42);
 
             doc.setTextColor(255, 255, 255);
             doc.setFont("helvetica", "bold");
-            doc.setFontSize(24);
-            doc.text("SAN ANDREAS SECRET SERVICE", 125, 30, { align: "center" });
+            doc.setFontSize(22);
+            doc.text("SAN ANDREAS SECRET SERVICE", 125, 28, { align: "center" });
             
             doc.setTextColor(gold[0], gold[1], gold[2]);
-            doc.setFontSize(12);
-            doc.text("STATE SPECIAL AGENT PROGRAM", 125, 40, { align: "center", charSpace: 1.5 });
+            doc.setFontSize(10);
+            doc.text("OFFICE OF STATE SECURITY - SPECIAL AGENT DIVISION", 125, 36, { align: "center", charSpace: 1 });
+            doc.setTextColor(180, 180, 180);
+            doc.setFontSize(8);
+            doc.text("CONFIDENTIEL - DOCUMENT OFFICIEL D'ÉTAT", 125, 42, { align: "center" });
 
-            doc.setTextColor(235, 235, 235);
-            doc.setFontSize(80);
+            // Filigrane
+            doc.setTextColor(230, 230, 230);
+            doc.setFontSize(75);
             doc.text("S.A.S.S.", 105, 160, { align: "center", angle: 45 });
 
-            let y = 90;
+            // Infos Rapport
+            let y = 85;
             doc.setTextColor(navy[0], navy[1], navy[2]);
-            doc.setFontSize(11);
-            doc.text(`DOC-ID: ${Math.floor(Math.random()*900000)}`, 15, y);
-            doc.text(`DATE: ${new Date().toLocaleDateString()}`, 165, y);
+            doc.setFont("courier", "bold");
+            doc.setFontSize(9);
+            doc.text(`REF-LOG : ${Math.floor(Date.now()/1000)}`, 15, y);
+            doc.text(`DATE : ${new Date().toLocaleDateString('fr-FR')}`, 165, y);
 
-            y += 25;
-            doc.setFontSize(20);
+            y += 20;
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(18);
             doc.text("RAPPORT D'INTÉGRATION", 105, y, { align: "center" });
-            doc.line(65, y + 3, 145, y + 3);
+            doc.line(60, y + 2, 150, y + 2);
 
-            y += 25;
-            doc.setFontSize(13);
+            y += 20;
+            doc.setFontSize(11);
             const items = [
-                ["IDENTITÉ DU SUJET", `${f} ${l}`],
-                ["MATRICULE (ID)", `#${id}`],
-                ["COMMUNICATIONS", p],
-                ["ACCRÉDITATION", isAccepted ? "SASS - VALIDÉ" : "SASS - REJETÉ"]
+                ["NOM COMPLET", `${f} ${l}`],
+                ["ID BADGE", `#${id}`],
+                ["TÉLÉPHONE", p]
             ];
 
             items.forEach(([label, val]) => {
                 doc.setFont(undefined, "bold");
                 doc.text(label + " :", 30, y);
                 doc.setFont(undefined, "normal");
-                doc.text(val, 95, y);
-                doc.setDrawColor(220, 220, 220);
+                doc.text(val, 80, y);
+                doc.setDrawColor(210, 210, 210);
                 doc.line(30, y + 2, 180, y + 2);
-                y += 15;
+                y += 12;
             });
 
-            y += 20;
-            const color = isAccepted ? [13, 27, 42] : [133, 0, 0];
-            doc.setFillColor(color[0], color[1], color[2]);
-            doc.rect(25, y, 160, 45, 'F');
+            // Bloc Observations
+            y += 10;
+            doc.setFont(undefined, "bold");
+            doc.text("OBSERVATIONS DE LA DIRECTION :", 30, y);
+            y += 8;
+            doc.setFont(undefined, "normal");
+            doc.setFontSize(10);
+            const splitObs = doc.splitTextToSize(obs, 150);
+            doc.text(splitObs, 30, y);
+            
+            // Verdict
+            y = 210;
+            const statusColor = isAccepted ? [13, 27, 42] : [130, 0, 0];
+            doc.setFillColor(statusColor[0], statusColor[1], statusColor[2]);
+            doc.rect(25, y, 160, 48, 'F');
             doc.setDrawColor(gold[0], gold[1], gold[2]);
-            doc.rect(26, y+1, 158, 43);
+            doc.rect(26, y+1, 158, 46);
 
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(22);
+            doc.setFontSize(20);
+            doc.setFont(undefined, "bold");
             doc.text(isAccepted ? "CANDIDATURE APPROUVÉE" : "CANDIDATURE REJETÉE", 105, y + 18, { align: "center" });
             
             doc.setFontSize(10);
             doc.setTextColor(isAccepted ? gold[0] : 255, isAccepted ? gold[1] : 255, isAccepted ? gold[2] : 255);
             const msg = isAccepted 
-                ? "Accès autorisé dans l'unité d'élite du San Andreas Secret Service." 
-                : "Sujet refusé du SASS de manière DÉFINITIF.";
+                ? "Le sujet est admis. Bienvenue au sein du San Andreas Secret Service." 
+                : "Le sujet est définitivement écarté du programme de recrutement.";
             doc.text(msg, 105, y + 32, { align: "center" });
 
-            doc.save(`SASS_REPORT_${l}.pdf`);
+            // Pied de page
+            doc.setTextColor(150, 150, 150);
+            doc.setFontSize(7);
+            doc.text("DOCUMENT SÉCURISÉ - ÉTAT DE SAN ANDREAS - S.A.S.S.", 105, 288, { align: "center" });
+
+            // Nom du fichier personnalisé
+            const statusLabel = isAccepted ? "APPROVE" : "REJECT";
+            doc.save(`SASS_${statusLabel}_${l}.pdf`);
 
         } catch (error) {
-            alert("Erreur : Impossible de trouver SASS.png dans le dossier.");
+            alert("Erreur : SASS.png est introuvable.");
         }
     }
 </script>
 
 </body>
 </html>
-
