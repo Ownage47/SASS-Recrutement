@@ -42,8 +42,14 @@
             padding: 15px; border: none; cursor: pointer; font-weight: 900; 
             text-transform: uppercase; transition: 0.2s;
         }
-        .btn-approve { background: var(--sass-blue); color: #fff; }
-        .btn-deny { background: #fff; color: #850000; border: 2px solid #850000; }
+        .btn-approve { 
+            background: var(--sass-blue); 
+            color: #fff; 
+        }
+        .btn-deny { 
+            background: var(--sass-gold); 
+            color: var(--sass-blue); 
+        }
         button:hover { opacity: 0.9; transform: translateY(-2px); }
     </style>
 </head>
@@ -137,7 +143,7 @@
             
             doc.setTextColor(gold[0], gold[1], gold[2]);
             doc.setFontSize(10);
-            doc.text("OFFICE OF STATE SECURITY - SPECIAL AGENT DIVISION", 125, 36, { align: "center", charSpace: 1 });
+            doc.text("OFFICE OF STATE SECURITY", 125, 36, { align: "center", charSpace: 1 });
             doc.setTextColor(180, 180, 180);
             doc.setFontSize(8);
             doc.text("CONFIDENTIEL - DOCUMENT OFFICIEL D'ÉTAT", 125, 42, { align: "center" });
