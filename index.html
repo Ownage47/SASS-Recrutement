@@ -55,19 +55,19 @@
 
     <div class="field">
         <label>Prénom</label>
-        <input type="text" id="fn" placeholder="Nathan">
+        <input type="text" id="fn" placeholder="John">
     </div>
     <div class="field">
         <label>Nom</label>
-        <input type="text" id="ln" placeholder="Drake">
+        <input type="text" id="ln" placeholder="Doe">
     </div>
     <div class="field">
-        <label>ID Badge</label>
+        <label>ID </label>
         <input type="text" id="id" placeholder="8821">
     </div>
     <div class="field">
         <label>Téléphone</label>
-        <input type="text" id="ph" placeholder="555-XXXX">
+        <input type="text" id="ph" placeholder="00000-00000">
     </div>
 
     <div class="actions">
@@ -183,8 +183,8 @@
             doc.setFontSize(10);
             doc.setTextColor(isAccepted ? gold[0] : 255, isAccepted ? gold[1] : 255, isAccepted ? gold[2] : 255);
             const msg = isAccepted 
-                ? "Accès autorisé aux infrastructures sécurisées de l'État." 
-                : "Sujet refusé de manière DEFINITIVE.";
+                ? "Accès autorisé dans l'unité d'élite du San Andreas Secret Service." 
+                : "Sujet refusé du SASS de manière DÉFINITIF.";
             doc.text(msg, 105, y + 32, { align: "center" });
 
             doc.save(`SASS_REPORT_${l}.pdf`);
@@ -197,3 +197,4 @@
 
 </body>
 </html>
+
